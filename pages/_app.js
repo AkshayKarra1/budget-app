@@ -44,12 +44,14 @@ export default function MyApp({ Component, pageProps }) {
                 }
               })();
             } else if (result.isDenied) {
+              clearTimeout(timer);
               Util.setSessionData("userToken", "");
               router.push("/");
             }
           });
           setStartTimer(false);
         }, expiresIn * 1000 - 20000);
+        console.log("Timer jus set", timer);
       }
 
       return () => {

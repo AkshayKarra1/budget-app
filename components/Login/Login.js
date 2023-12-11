@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import Util from "../../util/Util";
 
 const Login = (props) => {
-  console.log(props);
   const router = useRouter();
   const [showLogin, setShowLogin] = useState(true);
   const [firstName, setFirstName] = useState("");
@@ -19,6 +18,13 @@ const Login = (props) => {
   const showLoginRegister = () => {
     setShowLogin(!showLogin);
   };
+
+  // const highestId = window.setTimeout(() => {
+  //   console.log("Highest Id", highestId);
+  //   for (let i = highestId; i >= 0; i--) {
+  //     window.clearTimeout(i);
+  //   }
+  // }, 0);
 
   const login = async (event) => {
     event.preventDefault();
