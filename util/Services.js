@@ -22,14 +22,21 @@ class Services {
     return Util.postDataToApiGateway(url, body, null);
   }
 
-  static async getCategories() {
-    let url = process.env.NEXT_PUBLIC_API_BASE_URL + `/category`;
+  static async getCategories(userToken) {
+    let url =
+      process.env.NEXT_PUBLIC_API_BASE_URL + `/category?userToken=${userToken}`;
     return Util.getDataFromApiGateway(url, null);
   }
 
-  static async getExpenses() {
-    let url = process.env.NEXT_PUBLIC_API_BASE_URL + `/expense`;
+  static async getExpenses(userToken) {
+    let url =
+      process.env.NEXT_PUBLIC_API_BASE_URL + `/expense?userToken=${userToken}`;
     return Util.getDataFromApiGateway(url, null);
+  }
+
+  static async refreshToken(body) {
+    let url = process.env.NEXT_PUBLIC_API_BASE_URL + `/refreshToken`;
+    return Util.postDataToApiGateway(url, body, null);
   }
 }
 export default Services;

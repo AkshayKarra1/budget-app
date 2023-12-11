@@ -14,9 +14,10 @@ const Expense = () => {
   );
   const [amount, setAmount] = useState();
   const [optionsList, setOptionsList] = useState([]);
+  const [disabled, setDisabled] = useState(false);
 
   async function fetchData() {
-    let resp = await Services.getCategories();
+    let resp = await Services.getCategories(Util.getSessionData("userToken"));
     if (resp && resp.success && resp.data) {
       let options = resp.data.map((item, index) => {
         return (
@@ -68,7 +69,7 @@ const Expense = () => {
       });
       return;
     }
-
+    setDisabled(true);
     let resp = await Services.createExpense({
       expenseDate,
       category,
@@ -101,6 +102,7 @@ const Expense = () => {
         icon: "error",
       });
     }
+    setDisabled(false);
   };
 
   return (
@@ -152,7 +154,11 @@ const Expense = () => {
               <label htmlFor="floatingPassword">Amount</label>
             </div>
 
-            <button className="w-100 btn btn-md btn-primary" type="submit">
+            <button
+              className="w-100 btn btn-md btn-primary"
+              type="submit"
+              disabled={disabled}
+            >
               Create
             </button>
           </form>

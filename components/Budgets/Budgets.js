@@ -3,17 +3,22 @@ import Navbar from "../Navbar/Navbar";
 import Services from "../../util/Services";
 import * as style from "./Budgets.module.css";
 import Swal from "sweetalert2";
+import { useRouter } from "next/router";
+import Util from "../../util/Util";
 
 const Budgets = () => {
+  const router = useRouter();
+
   const [category, setCategory] = useState("");
   const [budgetList, setBudgeList] = useState([]);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   async function fetchData() {
-    let resp = await Services.getCategories();
+    let resp = await Services.getCategories(Util.getSessionData("userToken"));
     if (resp && resp.success && resp.data) {
       let listRows = resp.data.map((item, index) => {
         return (
@@ -39,22 +44,26 @@ const Budgets = () => {
         icon: "error",
       });
     }
-
-    let resp = await Services.createCategory({ category: category });
+    setDisabled(true);
+    let resp = await Services.createCategory({
+      category: category,
+      userToken: Util.getSessionData("userToken"),
+    });
     if (resp && resp.data && resp.data.success) {
       Swal.fire({
         title: "Success!",
-        text: resp.data.message,
+        text: resp.message,
         icon: "success",
       });
       setCategory("");
       await fetchData();
-    } else if (resp && resp.data.message) {
+    } else if (resp && resp.message) {
       Swal.fire({
         title: "Error!",
-        text: resp.data.message,
+        text: resp.message,
         icon: "error",
       });
+      router.push("/");
     } else {
       Swal.fire({
         title: "Error!",
@@ -62,6 +71,8 @@ const Budgets = () => {
         icon: "error",
       });
     }
+    setDisabled(false);
+    return;
   };
   return (
     <>
@@ -97,7 +108,11 @@ const Budgets = () => {
                   <label htmlFor="floatingInput">Category</label>
                 </div>
 
-                <button className="w-100 btn btn-md btn-primary" type="submit">
+                <button
+                  className="w-100 btn btn-md btn-primary"
+                  type="submit"
+                  disabled={disabled}
+                >
                   Create
                 </button>
               </form>

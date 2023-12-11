@@ -2,7 +2,8 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Login from "../components/Login/Login";
 
-export default function Home() {
+export default function Home(props) {
+  // console.log("Home props", props);
   return (
     <div className={styles.container}>
       <Head>
@@ -10,7 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Login></Login>
+      <Login {...props}></Login>
       <style jsx>{`
         main {
           padding: 5rem 0;

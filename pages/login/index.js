@@ -14,10 +14,8 @@ const LoginPage = () => {
         <meta name="keywords" content="Budget-Login" />
         <meta name="description" content="Login to the Budget App."></meta>
       </Head>
-      <div style={{ margin: "2rem" }} className={"container"}>
-        <h3>Personal Budget App</h3>
-        <Login></Login>
-      </div>
+
+      <Login></Login>
     </>
   );
 };

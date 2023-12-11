@@ -5,7 +5,8 @@ import Services from "../../util/Services";
 import { useRouter } from "next/router";
 import Util from "../../util/Util";
 
-const Login = () => {
+const Login = (props) => {
+  console.log(props);
   const router = useRouter();
   const [showLogin, setShowLogin] = useState(true);
   const [firstName, setFirstName] = useState("");
@@ -13,14 +14,57 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [disabled, setDisabled] = useState(false);
 
   const showLoginRegister = () => {
     setShowLogin(!showLogin);
   };
 
-  const login = (event) => {
+  const login = async (event) => {
     event.preventDefault();
-    router.push("/dashboard");
+
+    let fieldEmptyMessage = "";
+
+    if (!email) {
+      fieldEmptyMessage = "Email can not be empty";
+    }
+    if (!fieldEmptyMessage && !password) {
+      fieldEmptyMessage = "Password can not be empty";
+    }
+
+    if (fieldEmptyMessage) {
+      Swal.fire({
+        title: "Error!",
+        text: fieldEmptyMessage,
+        icon: "error",
+        //confirmButtonText: "Cool",
+      });
+      return;
+    }
+
+    setDisabled(true);
+    let resp = await Services.login({ email, password });
+
+    if (resp && resp.data && resp.data.loginSuccess) {
+      Util.setSessionData("userToken", resp.data.userToken);
+      Util.setSessionData("tokenExpiresIn", resp.data.tokenExpiresIn);
+      setDisabled(false);
+      props.timerHandler(true);
+      router.push("/dashboard");
+    } else if (resp && resp.data.message) {
+      Swal.fire({
+        title: "Error!",
+        text: resp.data.message,
+        icon: "error",
+      });
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: "User Login failed",
+        icon: "error",
+      });
+    }
+    setDisabled(false);
   };
 
   const setFieldData = (event, label) => {
@@ -84,7 +128,7 @@ const Login = () => {
 
     if (resp && resp.data && resp.data.loginSuccess) {
       Util.setSessionData("userToken", resp.data.userToken);
-      // Add timer
+      props.timerHandler(true);
       router.push("/dashboard");
     } else if (resp && resp.data.message) {
       Swal.fire({
@@ -103,9 +147,12 @@ const Login = () => {
 
   return (
     <>
+      <div style={{ margin: "2rem" }}>
+        <h3>Personal Budget App</h3>
+      </div>
       {showLogin ? (
-        <div>
-          <main className={`${style["form-signin"]} "text-center" "mt-5"`}>
+        <div style={{ width: "30%" }}>
+          <main className={`${style["form-signin"]} "text-center"`}>
             <form onSubmit={login}>
               <h1 className="h3 mb-3 fw-normal">Sign in</h1>
 
@@ -139,14 +186,18 @@ const Login = () => {
                   Click here to <span>Sign up</span>
                 </label>
               </div>
-              <button className="w-100 btn btn-md btn-primary" type="submit">
+              <button
+                className="w-100 btn btn-md btn-primary"
+                type="submit"
+                disabled={disabled}
+              >
                 Sign in
               </button>
             </form>
           </main>
         </div>
       ) : (
-        <div>
+        <div style={{ width: "30%" }}>
           <main className={`${style["form-signin"]} "text-center" "mt-5"`}>
             <form onSubmit={register}>
               <h1 className="h3 mb-3 fw-normal">Sing up</h1>
@@ -215,7 +266,11 @@ const Login = () => {
                   <span>Login</span>
                 </label>
               </div>
-              <button className="w-100 btn btn-md btn-primary" type="submit">
+              <button
+                className="w-100 btn btn-md btn-primary"
+                type="submit"
+                disabled={disabled}
+              >
                 Register
               </button>
             </form>
