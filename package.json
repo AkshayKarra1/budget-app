@@ -13,8 +13,5 @@
     "react-dom": "18.2.0",
     "react-google-charts": "^4.0.1",
     "sweetalert2": "^11.10.1"
-  },
-  // "engines": {
-  //   "node": ">=18"
-  // }
+  }
 }
